@@ -1,5 +1,5 @@
 .gradle
 .idea
-build/libs/*-sources.jar
-src
-gradle
+build
+*.jar
+!.gradle/
