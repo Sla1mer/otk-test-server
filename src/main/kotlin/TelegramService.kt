@@ -24,11 +24,12 @@ class TelegramService {
         expectSuccess = true
     }
 
-    suspend fun sendNotification(name: String, communicationAddress: String, message: String?) {
+    suspend fun sendNotification(name: String, communicationAddress: String, phoneNumber: String, message: String?) {
         val text = """
             🔔 Новая заявка!
             👤 Имя: $name
             📞 Адрес для связи: $communicationAddress
+            📞 Номер телефона: $phoneNumber
             💬 Сообщение: ${message ?: "—"}
         """.trimIndent()
 

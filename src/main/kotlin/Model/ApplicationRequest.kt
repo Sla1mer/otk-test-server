@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class ApplicationRequest(
     val name: String,
     val communicationAddress: String,
+    val phoneNumber: String,
     val message: String? = null,
 )

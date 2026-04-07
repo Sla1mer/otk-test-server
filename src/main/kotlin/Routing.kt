@@ -35,7 +35,7 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.OK, mapOf("status" to "ok"))
 
                 launch {
-                    telegram.sendNotification(body.name, body.communicationAddress, body.message)
+                    telegram.sendNotification(body.name, body.communicationAddress, body.phoneNumber, body.message)
                 }
             }
         }
