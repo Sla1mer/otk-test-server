@@ -10,3 +10,4 @@ services:
     volumes:
       - /root/OTKServer/src/main/resources/static/images:/app/images:ro
       - /root/OTKServer/documents:/app/documents:ro
+      - /root/.ssh:/root/.ssh:ro
