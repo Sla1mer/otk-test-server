@@ -26,6 +26,7 @@ fun Application.configureHTTP() {
 
         allowHost("interlink-studio.ru", schemes = listOf("https"))
         allowHost("otkproject.vercel.app", schemes = listOf("https"))
+        allowHost("myotk.ru", schemes = listOf("https"))
         allowHost("localhost:5173", schemes = listOf("http"))
     }
 
