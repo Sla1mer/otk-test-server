@@ -9,36 +9,44 @@ import io.ktor.serialization.kotlinx.json.*
 
 class TelegramService {
 
-    private val token = System.getenv("TELEGRAM_TOKEN") ?: error("TELEGRAM_TOKEN не задан")
-    private val chatId = System.getenv("TELEGRAM_CHAT_ID") ?: error("TELEGRAM_CHAT_ID не задан")
+    private val sshHost = System.getenv("RELAY_SSH_HOST") ?: error("RELAY_SSH_HOST не задан")
+    private val sshUser = System.getenv("RELAY_SSH_USER") ?: "root"
+    private val scriptPath = System.getenv("RELAY_SCRIPT_PATH") ?: "/opt/tg-relay/send_telegram.sh"
 
-    private val client = HttpClient(CIO) {
-        install(ContentNegotiation) { json() }
-        engine {
-            endpoint {
-                keepAliveTime = 15_000
-                connectTimeout = 5_000
-                requestTimeout = 10_000
+    fun sendNotification(
+        name: String,
+        communicationAddress: String,
+        phoneNumber: String,
+        message: String?
+    ) {
+        val command = listOf(
+            "ssh",
+            "$sshUser@$sshHost",
+            scriptPath,
+            name,
+            communicationAddress,
+            phoneNumber,
+            message ?: ""
+        )
+
+        try {
+            val process = ProcessBuilder(command)
+                .redirectErrorStream(true)
+                .start()
+
+            val output = process.inputStream.bufferedReader().readText()
+            val exitCode = process.waitFor()
+
+            println("Telegram relay exitCode=$exitCode")
+            println("Telegram relay output=$output")
+
+            if (exitCode != 0) {
+                throw RuntimeException("SSH relay failed with exit code $exitCode")
             }
-        }
-        expectSuccess = true
-    }
 
-    suspend fun sendNotification(name: String, communicationAddress: String, phoneNumber: String, message: String?) {
-        val text = """
-            🔔 Новая заявка!
-            👤 Имя: $name
-            📞 Адрес для связи: $communicationAddress
-            📞 Номер телефона: $phoneNumber
-            💬 Сообщение: ${message ?: "—"}
-        """.trimIndent()
-
-        client.post("https://api.telegram.org/bot$token/sendMessage") {
-            contentType(ContentType.Application.Json)
-            setBody(mapOf(
-                "chat_id" to chatId,
-                "text" to text
-            ))
+        } catch (e: Exception) {
+            println("Telegram relay error: ${e.message}")
+            throw e
         }
     }
 }
