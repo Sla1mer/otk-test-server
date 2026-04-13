@@ -11,6 +11,8 @@ RUN gradle buildFatJar --no-daemon
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
+RUN apk add --no-cache openssh-client
+
 COPY --from=builder /app/build/libs/*-all.jar app.jar
 
 EXPOSE 8080
